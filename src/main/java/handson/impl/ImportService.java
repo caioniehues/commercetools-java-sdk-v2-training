@@ -27,32 +27,38 @@ public class ImportService {
 
     public CompletableFuture<ApiHttpResponse<ImportContainer>> createImportContainer(final String containerKey) {
 
-            return
-                apiRoot
-                        .importContainers()
-                        .post(
-                                ImportContainerDraftBuilder.of()
-                                       .key(containerKey)
-                                       .build()
-                        )
-                        .execute();
-        }
-
-
-    public CompletableFuture<ApiHttpResponse<ImportResponse>> createPriceImportRequest(
-            final String containerKey,
-            final String productKey,
-            final String productVariantKey,
-            final String priceKey,
-            final Money amount) {
-
-
-            return
-                    null;
+        return
+            apiRoot
+                .importContainers()
+                .post(
+                    ImportContainerDraftBuilder.of()
+                        .key(containerKey)
+                        .build()
+                )
+                .execute();
     }
 
+    public CompletableFuture<ApiHttpResponse<ImportResponse>> createPriceImportRequest(
+        final String containerKey,
+        final String productKey,
+        final String productVariantKey,
+        final String priceKey,
+        final Money amount) {
 
+        final PriceImportRequest priceImportRequest = PriceImportRequestBuilder.of()
+            .resources(PriceImportBuilder.of()
+                           .product(ProductKeyReferenceBuilder.of().key(productKey).build())
+                           .productVariant(ProductVariantKeyReferenceBuilder.of().key(productVariantKey).build())
+                           .key(priceKey)
+                           .value(amount)
+                           .country("DE")
+                           .publish(true)
+                           .build()
 
+            ).build();
 
+        return
+            apiRoot.prices().importContainers().withImportContainerKeyValue(containerKey).post(priceImportRequest).execute();
+    }
 
 }

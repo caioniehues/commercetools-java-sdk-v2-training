@@ -1,6 +1,8 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven {
+            url = uri("https://jfrog-platform.eu.aws.rccad.net:443/artifactory/riccapi-virtual-maven")
+        }
     }
 }
 plugins {
@@ -8,8 +10,8 @@ plugins {
 
     id 'idea'
 
-    id 'maven'
-    id 'maven-publish'
+//    id 'maven'
+//    id 'maven-publish'
 
     id 'java'
     id 'java-library' // needed to make sure that transitive deps have 'compile' scope
@@ -42,6 +44,7 @@ repositories {
 
 
 dependencies {
+
     implementation "com.commercetools.sdk:commercetools-http-client:${versions.commercetools}"
     implementation "com.commercetools.sdk:commercetools-sdk-java-api:${versions.commercetools}"
     implementation "com.commercetools.sdk:commercetools-graphql-api:${versions.commercetools}"

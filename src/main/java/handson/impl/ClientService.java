@@ -23,7 +23,16 @@ public class ClientService {
      */
     public static ProjectApiRoot createApiClient(final String prefix) throws IOException {
 
-        projectApiRoot = null;
+        final Properties properties = new Properties();
+        properties.load(ClientService.class.getResourceAsStream("/dev.properties"));
+        String cliendId = properties.getProperty(prefix + "clientId");
+        String clientSecret = properties.getProperty(prefix + "clientSecret");
+        String projectKey = properties.getProperty(prefix + "projectKey");
+
+        projectApiRoot = ApiRootBuilder.of().defaultClient(ClientCredentials.of().withClientId(cliendId).withClientSecret(clientSecret).build(),
+                                                           ServiceRegion.GCP_EUROPE_WEST1)
+            .build(projectKey);
+
         return projectApiRoot;
     }
 
@@ -54,7 +63,6 @@ public class ClientService {
         return prop.getProperty(prefix + "customerEmail");
     }
 
-
     /**
      * @return apiRoot
      * @throws IOException exception
@@ -68,18 +76,17 @@ public class ClientService {
         String projectKey = prop.getProperty(prefix + "projectKey");
 
         importApiRoot = ImportApiRootBuilder.of().defaultClient(
-                        ClientCredentials.of()
-                                .withClientId(clientId)
-                                .withClientSecret(clientSecret)
-                                .build(),
-                        com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1.getOAuthTokenUrl(),
-                        com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1.getApiUrl()
-                )
-                .build(projectKey);
+                ClientCredentials.of()
+                    .withClientId(clientId)
+                    .withClientSecret(clientSecret)
+                    .build(),
+                com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1.getOAuthTokenUrl(),
+                com.commercetools.importapi.defaultconfig.ServiceRegion.GCP_EUROPE_WEST1.getApiUrl()
+            )
+            .build(projectKey);
 
         return importApiRoot;
     }
-
 
     public static ProjectApiRoot createMeTokenApiClient(final String prefix) throws IOException {
 
@@ -92,18 +99,18 @@ public class ClientService {
         String clientSecret = prop.getProperty(prefix + "clientSecret");
 
         return ApiRootBuilder.of().defaultClient(
-                        ServiceRegion.GCP_EUROPE_WEST1.getApiUrl()
-                )
-                .withGlobalCustomerPasswordFlow(
-                        ClientCredentials.of()
-                                .withClientId(clientId)
-                                .withClientSecret(clientSecret)
-                                .build(),
-                        customerEmail,
-                        customerPassword,
-                        ServiceRegion.GCP_EUROPE_WEST1.getAuthUrl() + "/oauth/" + projectKey + "/customers/token"
-                )
-                .build(projectKey);
+                ServiceRegion.GCP_EUROPE_WEST1.getApiUrl()
+            )
+            .withGlobalCustomerPasswordFlow(
+                ClientCredentials.of()
+                    .withClientId(clientId)
+                    .withClientSecret(clientSecret)
+                    .build(),
+                customerEmail,
+                customerPassword,
+                ServiceRegion.GCP_EUROPE_WEST1.getAuthUrl() + "/oauth/" + projectKey + "/customers/token"
+            )
+            .build(projectKey);
     }
 
     public static ProjectApiRoot createStoreMeApiClient(final String prefix) throws IOException {
@@ -118,18 +125,17 @@ public class ClientService {
         String clientSecret = prop.getProperty(prefix + "clientSecret");
 
         return ApiRootBuilder.of().defaultClient(ServiceRegion.GCP_EUROPE_WEST1.getApiUrl())
-                .withGlobalCustomerPasswordFlow(
-                        ClientCredentials.of()
-                                .withClientId(clientId)
-                                .withClientSecret(clientSecret)
-                                .build(),
-                        storeCustomerEmail,
-                        storeCustomerPassword,
-                        ServiceRegion.GCP_EUROPE_WEST1.getAuthUrl() + "/oauth/" + projectKey + "/in-store/key=" + storeKey + "/customers/token"
-                )
-                .build(projectKey);
+            .withGlobalCustomerPasswordFlow(
+                ClientCredentials.of()
+                    .withClientId(clientId)
+                    .withClientSecret(clientSecret)
+                    .build(),
+                storeCustomerEmail,
+                storeCustomerPassword,
+                ServiceRegion.GCP_EUROPE_WEST1.getAuthUrl() + "/oauth/" + projectKey + "/in-store/key=" + storeKey + "/customers/token"
+            )
+            .build(projectKey);
     }
-
 
     public static AuthenticationToken getTokenForClientCredentialsFlow(final String prefix) throws IOException {
 
@@ -139,11 +145,11 @@ public class ClientService {
         String clientSecret = prop.getProperty(prefix + "clientSecret");
         AuthenticationToken token = null;
         try (final ClientCredentialsTokenSupplier clientCredentialsTokenSupplier = new ClientCredentialsTokenSupplier(
-                clientId,
-                clientSecret,
-                null,
-                ServiceRegion.GCP_EUROPE_WEST1.getOAuthTokenUrl(),
-                HttpClientSupplier.of().get()
+            clientId,
+            clientSecret,
+            null,
+            ServiceRegion.GCP_EUROPE_WEST1.getOAuthTokenUrl(),
+            HttpClientSupplier.of().get()
         )) {
             token = clientCredentialsTokenSupplier.getToken().get();
         } catch (InterruptedException | ExecutionException e) {

@@ -15,7 +15,7 @@ import static handson.impl.ClientService.createApiClient;
 
 /**
  * Configure sphere client and get project information.
- *
+ * <p>
  * See:
  *  TODO dev.properties
  *  TODO {@link ClientService#createApiClient(String prefix)}
@@ -30,14 +30,16 @@ public class Task02b_UPDATE_Group {
         final ProjectApiRoot client = createApiClient(apiClientPrefix);
         CustomerService customerService = new CustomerService(client);
 
-        // TODO:
-        //  GET a customer
-        //  GET a customer group
-        //  ASSIGN the customer to the customer group
-        //
-        logger.info("Customer assigned to group: " +
-                ""
-        );
+        /*
+         TODO:
+          GET a customer
+          GET a customer group
+          ASSIGN the customer to the customer group
+
+        */
+        logger.info("Customer assigned to group: {}", customerService.getCustomerByKey("cn-customer-01").thenCombineAsync(
+                customerService.getCustomerGroupByKey("vip-customers"), customerService::assignCustomerToCustomerGroup).get().get().getBody().getCustomerGroup()
+            .getId());
         client.close();
     }
 
